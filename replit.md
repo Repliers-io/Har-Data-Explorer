@@ -1,45 +1,58 @@
-# [Project name]
+# HAR Member Dashboard
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A prototype dashboard for HAR (Houston Association of REALTORS) members to explore their proprietary HAR.com performance data via the Repliers API. Agents and brokers can see listing traffic, client transaction reviews, and ShowingSmart logs — all the numbers they check daily.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
+- `pnpm --filter @workspace/har-dashboard run dev` — run the frontend (port assigned by workflow)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+
+## Required Secrets
+
+- `REPLIERS_API_KEY` — Repliers API key with HAR membership. Set in Replit Secrets. The API server reads this and forwards it as the `REPLIERS-API-KEY` header to the Repliers API.
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
+- API: Express 5 (proxy layer — no database needed)
+- Frontend: React 19 + Vite + Tailwind v4 + shadcn/ui
+- Data: Repliers HAR.com partner endpoints
 - API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — OpenAPI spec (source of truth for all API contracts)
+- `artifacts/api-server/src/routes/har.ts` — HAR proxy routes (views, reviews, showings, summary)
+- `artifacts/har-dashboard/src/pages/` — four page components (summary, views, reviews, showings)
+- `artifacts/har-dashboard/src/components/layout/` — sidebar + app shell
+- `artifacts/har-dashboard/src/lib/date-utils.ts` — date formatting helpers + default 30-day window
+- `lib/api-client-react/src/generated/` — generated React Query hooks (do not edit manually)
+
+## HAR Endpoints (proxied)
+
+| Our route | Repliers upstream | Data |
+|---|---|---|
+| `GET /api/har/views` | `/partners/har/listings/views` | Per-listing daily web + mobile views |
+| `GET /api/har/reviews` | `/partners/har/listings/reviews` | Transaction reviews with component scores |
+| `GET /api/har/showings` | `/partners/har/showingsmart/logs` | ShowingSmart logs grouped by listing |
+| `GET /api/har/summary` | (aggregates all three) | Rolled-up headline stats |
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
-
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Proxy-only backend:** The API server is a thin proxy — no database. It forwards query params to Repliers and aggregates the summary endpoint from three parallel upstream calls. This keeps the setup simple and means HAR data is always fresh.
+- **API key kept server-side:** `REPLIERS_API_KEY` never reaches the browser. The frontend calls `/api/har/*` routes; the server adds the header when proxying to Repliers.
+- **No `integer` types in OpenAPI spec:** Orval v8 generates `zod.int()` for `integer` types, which is Zod v4 syntax — the workspace uses Zod v3. All numeric fields use `number` instead.
+- **Date defaults:** All pages default to the last 30 days. `defaultDateBegin` / `defaultDateEnd` constants are in `lib/date-utils.ts`. Interactive date pickers are a planned follow-up.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+_Populate as you build._
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- After changing `lib/api-spec/openapi.yaml`, always run `pnpm --filter @workspace/api-spec run codegen` before touching route handlers or frontend hooks.
+- Repliers returns listing images as relative paths (`har/IMG-12345678_1.jpg`). The full CDN base URL is not documented — treat images as unavailable and always show a fallback.
+- The HAR access rules: individual agents only see their own data; requests for another agent's `boardAgentId` on views/reviews return 403. Showing logs fall back to the agent's own data instead.
