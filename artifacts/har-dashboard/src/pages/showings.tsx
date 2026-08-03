@@ -99,21 +99,43 @@ export default function ShowingsPage() {
               <Card key={`${listing.mlsNumber}-${index}`} className="border-border overflow-hidden shadow-sm">
                 {/* Listing header */}
                 <div className="bg-muted/30 p-4 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <ListingPhoto
                       images={listing.images}
                       className="w-14 h-14 rounded-md shadow-sm flex-shrink-0"
                       iconSize="w-6 h-6"
                     />
-                    <div>
+                    <div className="min-w-0">
                       <h2 className="text-lg font-bold text-foreground">{formatAddress(listing.address)}</h2>
-                      <div className="text-sm text-muted-foreground flex gap-3 mt-0.5">
+                      <div className="text-sm text-muted-foreground flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
                         <span>MLS: <span className="font-mono">{listing.mlsNumber}</span></span>
                         {listing.listPrice && <span>{formatCurrency(listing.listPrice)}</span>}
                       </div>
+                      {/* List agent — pulled from first log since it's constant per listing */}
+                      {logs[0]?.laAgentkey && (
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1.5 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <User className="w-3 h-3" />
+                            <span className="font-medium text-foreground/80">List agent:</span>
+                            {logs[0].laAgentkey}
+                          </span>
+                          {logs[0].laOfficeName && (
+                            <span className="flex items-center gap-1">
+                              <Building className="w-3 h-3" />
+                              {logs[0].laOfficeName}
+                            </span>
+                          )}
+                          {logs[0].laCellPhone && (
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3" />
+                              {logs[0].laCellPhone}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <Badge variant="secondary" className="w-fit text-sm">
+                  <Badge variant="secondary" className="w-fit text-sm flex-shrink-0">
                     {logs.length} {logs.length === 1 ? "Showing" : "Showings"}
                   </Badge>
                 </div>
