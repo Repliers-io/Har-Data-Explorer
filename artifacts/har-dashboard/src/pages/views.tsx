@@ -152,10 +152,12 @@ export default function ViewsPage() {
                               </>
                             )}
                           </div>
-                          {(record as any).laAgentkey && (
+                          {((record as any).agentName || (record as any).laAgentkey) && (
                             <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
                               <User className="w-3 h-3" />
-                              <span className="font-medium text-foreground/70">{(record as any).laAgentkey}</span>
+                              <span className="font-medium text-foreground/70">
+                                {(record as any).agentName || (record as any).laAgentkey}
+                              </span>
                             </div>
                           )}
                         </div>

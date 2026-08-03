@@ -153,12 +153,12 @@ export default function ShowingsPage() {
                         {listing.listPrice && <span>{formatCurrency(listing.listPrice)}</span>}
                       </div>
                       {/* List agent — pulled from first log since it's constant per listing */}
-                      {logs[0]?.laAgentkey && (
+                      {(logs[0]?.listAgentName || logs[0]?.laAgentkey) && (
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1.5 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <User className="w-3 h-3" />
                             <span className="font-medium text-foreground/80">List agent:</span>
-                            {logs[0].laAgentkey}
+                            {logs[0].listAgentName || logs[0].laAgentkey}
                           </span>
                           {logs[0].laOfficeName && (
                             <span className="flex items-center gap-1">
@@ -216,11 +216,11 @@ export default function ShowingsPage() {
                                 <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                                   Showing Agent
                                 </h4>
-                                {log.saAgentkey ? (
+                                {(log.showingAgentName || log.saAgentkey) ? (
                                   <div className="space-y-1.5 text-sm">
                                     <div className="flex items-center gap-2 text-foreground font-medium">
                                       <User className="w-4 h-4 text-primary/70 flex-shrink-0" />
-                                      {log.saAgentkey}
+                                      {log.showingAgentName || log.saAgentkey}
                                     </div>
                                     {log.saOfficeName && (
                                       <div className="flex items-center gap-2 text-muted-foreground">

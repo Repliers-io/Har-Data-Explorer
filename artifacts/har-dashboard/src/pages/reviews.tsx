@@ -77,10 +77,12 @@ export default function ReviewsPage() {
                       <Badge variant="outline" className="text-xs">
                         {roleLabel}
                       </Badge>
-                      {review.agentkey && (
+                      {(review.agentName || review.agentkey) && (
                         <span className="flex items-center gap-1 text-xs text-muted-foreground">
                           <User className="w-3 h-3" />
-                          <span className="font-medium text-foreground/80">{review.agentkey}</span>
+                          <span className="font-medium text-foreground/80">
+                            {review.agentName || review.agentkey}
+                          </span>
                         </span>
                       )}
                     </div>
