@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Eye, Smartphone, Globe } from "lucide-react";
+import { Search, Eye, Smartphone, Globe, User } from "lucide-react";
 import { ListingPhoto } from "@/components/shared/listing-photo";
 import { Badge } from "@/components/ui/badge";
 
@@ -109,6 +109,12 @@ export default function ViewsPage() {
                               </>
                             )}
                           </div>
+                          {(record as any).laAgentkey && (
+                            <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              <span className="font-medium text-foreground/70">{(record as any).laAgentkey}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </TableCell>
