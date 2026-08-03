@@ -6,7 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, MapPin, Eye, Smartphone, Globe } from "lucide-react";
+import { Search, Eye, Smartphone, Globe } from "lucide-react";
+import { ListingPhoto } from "@/components/shared/listing-photo";
 import { Badge } from "@/components/ui/badge";
 
 export default function ViewsPage() {
@@ -91,9 +92,10 @@ export default function ViewsPage() {
                   >
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded bg-secondary flex items-center justify-center text-secondary-foreground flex-shrink-0 shadow-sm border border-border">
-                          <MapPin className="h-4 w-4 opacity-50" />
-                        </div>
+                        <ListingPhoto
+                          images={(record as any).images}
+                          className="w-10 h-10 rounded flex-shrink-0 shadow-sm"
+                        />
                         <div>
                           <div className="font-semibold text-foreground truncate max-w-[200px]">
                             {addressStr}

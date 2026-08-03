@@ -5,7 +5,8 @@ import { ApiKeyError, isApiKeyError } from "@/components/shared/api-key-error";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, MapPin, Clock, User, Phone, Mail, Building, FileText } from "lucide-react";
+import { Search, Clock, User, Phone, Mail, Building, FileText } from "lucide-react";
+import { ListingPhoto } from "@/components/shared/listing-photo";
 import { Badge } from "@/components/ui/badge";
 
 export default function ShowingsPage() {
@@ -71,9 +72,11 @@ export default function ShowingsPage() {
             <Card key={`${listing.mlsNumber}-${index}`} className="border-border overflow-hidden shadow-sm">
               <div className="bg-muted/30 p-4 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="bg-background border border-border p-2 rounded-md shadow-sm">
-                    <MapPin className="w-5 h-5 text-primary" />
-                  </div>
+                  <ListingPhoto
+                    images={(listing as any).images}
+                    className="w-14 h-14 rounded-md shadow-sm flex-shrink-0"
+                    iconSize="w-6 h-6"
+                  />
                   <div>
                     <h2 className="text-lg font-bold text-foreground">
                       {formatAddress(listing.address)}
