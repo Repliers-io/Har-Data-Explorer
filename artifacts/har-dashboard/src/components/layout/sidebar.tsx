@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, BarChart3, Star, CalendarDays, Building2 } from "lucide-react";
+import { LayoutDashboard, BarChart3, Star, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
+import harLogo from "@/assets/har-logo.svg";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -14,9 +15,8 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full w-64 flex-col bg-sidebar border-r border-sidebar-border">
-      <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border bg-card">
-        <Building2 className="h-6 w-6 text-primary mr-3" />
-        <span className="font-semibold text-foreground tracking-tight">HAR Member</span>
+      <div className="flex h-16 shrink-0 items-center px-5 border-b border-sidebar-border bg-card">
+        <img src={harLogo} alt="HAR" className="h-7 w-auto" />
       </div>
       
       <div className="flex flex-1 flex-col overflow-y-auto pt-6 px-4 pb-4">
