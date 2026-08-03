@@ -1,0 +1,66 @@
+{
+    "success": true,
+    "total": 25357,
+    "limit": 50,
+    "offset": 0,
+    "data": [
+        {
+            "mlsNumber": "50920212",
+            "logs": [
+                {
+                    "showingId": 8952730,
+                    "showingDate": "2026-08-08",
+                    "showingStartTime": "2026-08-08T15:30:00",
+                    "showingEndTime": "2026-08-08T16:00:00",
+                    "showingType": "SHOW2",
+                    "showingStatus": "CANCL",
+                    "laOfficeName": "Greenwood King Properties - Kirby Office",
+                    "laOfficekey": "GKPI01",
+                    "laAgentkey": "DUMAY",
+                    "laCellPhone": "7137240577",
+                    "laEmail": "andersondumay@greenwoodking.com",
+                    "saOfficeName": "Keller Williams Realty Metropolitan",
+                    "saOfficekey": "KWHM01",
+                    "saAgentkey": "pribble",
+                    "saCellPhone": "7135421730",
+                    "saEmail": "pribble@pribblegroup.com",
+                    "saComments": "Hi - Second showing. I know this is almost two weeks out but my buyers wanted to schedule in advance due to their work travel.",
+                    "feedbackText": null,
+                    "listagentAgentkey": "DUMAY",
+                    "listofficeOfficekey": "GKPI01"
+                }
+            ],
+            "address": {
+                "area": "Harris",
+                "city": "Houston",
+                "country": "US",
+                "district": null,
+                "majorIntersection": null,
+                "neighborhood": "Southgate",
+                "streetDirection": null,
+                "streetName": "Macarthur",
+                "streetNumber": "2215",
+                "streetSuffix": "Street",
+                "unitNumber": null,
+                "zip": "77030",
+                "state": "TX",
+                "communityCode": null,
+                "streetDirectionPrefix": null,
+                "addressKey": "2215macarthurstreethouston"
+            },
+            "images": [
+                "har/IMG-50920212_1.jpg"
+            ],
+            "listDate": "2026-04-14T00:00:00.000-00:00",
+            "soldDate": null,
+            "listPrice": 1955000,
+            "soldPrice": null,
+            "details": {
+                "numBedrooms": 5,
+                "numBathrooms": 5,
+                "sqft": "4243",
+                "numGarageSpaces": 2,
+                "propertyType": "Residential",
+                "style": "Single Family Residence"
+            }
+        },
