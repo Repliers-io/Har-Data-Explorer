@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "HAR Member Dashboard"
+description = "A prototype dashboard for HAR (Houston Association of REALTORS) members to explore their Repliers HAR.com data — listing view analytics, transaction reviews, and ShowingSmart logs for their listings."
+version = "1.0.0"
+id = "artifacts/har-dashboard"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20084
+
+[services.development]
+run = "pnpm --filter @workspace/har-dashboard run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/har-dashboard", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/har-dashboard/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20084"
+BASE_PATH = "/"

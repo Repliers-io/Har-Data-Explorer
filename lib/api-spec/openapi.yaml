@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: har
+    description: HAR.com partner data endpoints
 paths:
   /healthz:
     get:
@@ -24,6 +26,175 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /har/views:
+    get:
+      operationId: getHarViews
+      tags: [har]
+      summary: Get listing view statistics
+      description: Returns per-listing, per-day web and mobile view counts from HAR.com
+      parameters:
+        - name: mlsNumber
+          in: query
+          schema: { type: string }
+        - name: dateBegin
+          in: query
+          schema: { type: string }
+        - name: dateEnd
+          in: query
+          schema: { type: string }
+        - name: sortBy
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: number }
+        - name: offset
+          in: query
+          schema: { type: number }
+        - name: boardAgentId
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Listing view records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HarViewsResponse"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /har/reviews:
+    get:
+      operationId: getHarReviews
+      tags: [har]
+      summary: Get transaction reviews
+      description: Returns client-submitted ratings tied to closed transactions
+      parameters:
+        - name: mlsNumber
+          in: query
+          schema: { type: string }
+        - name: dateBegin
+          in: query
+          schema: { type: string }
+        - name: dateEnd
+          in: query
+          schema: { type: string }
+        - name: sortBy
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: number }
+        - name: offset
+          in: query
+          schema: { type: number }
+        - name: boardAgentId
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Review records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HarReviewsResponse"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /har/showings:
+    get:
+      operationId: getHarShowings
+      tags: [har]
+      summary: Get ShowingSmart logs
+      description: Returns ShowingSmart showing activity logs grouped by listing
+      parameters:
+        - name: mlsNumber
+          in: query
+          schema: { type: string }
+        - name: dateBegin
+          in: query
+          schema: { type: string }
+        - name: dateEnd
+          in: query
+          schema: { type: string }
+        - name: sortBy
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: number }
+        - name: offset
+          in: query
+          schema: { type: number }
+      responses:
+        "200":
+          description: Showing log records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HarShowingsResponse"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /har/summary:
+    get:
+      operationId: getHarSummary
+      tags: [har]
+      summary: Get aggregated HAR dashboard summary
+      description: Returns rolled-up totals for views, reviews, and showings for a quick overview
+      parameters:
+        - name: dateBegin
+          in: query
+          schema: { type: string }
+        - name: dateEnd
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Summary stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HarSummary"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +205,200 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    HarAddress:
+      type: object
+      properties:
+        streetNumber: { type: ["string", "null"] }
+        streetName: { type: ["string", "null"] }
+        streetSuffix: { type: ["string", "null"] }
+        streetDirection: { type: ["string", "null"] }
+        unitNumber: { type: ["string", "null"] }
+        city: { type: ["string", "null"] }
+        state: { type: ["string", "null"] }
+        zip: { type: ["string", "null"] }
+        neighborhood: { type: ["string", "null"] }
+        area: { type: ["string", "null"] }
+        country: { type: ["string", "null"] }
+        addressKey: { type: ["string", "null"] }
+
+    HarPropertyDetails:
+      type: object
+      properties:
+        numBedrooms: { type: ["number", "null"] }
+        numBathrooms: { type: ["number", "null"] }
+        sqft: { type: ["string", "null"] }
+        numGarageSpaces: { type: ["number", "null"] }
+        propertyType: { type: ["string", "null"] }
+        style: { type: ["string", "null"] }
+
+    HarListingEnrichment:
+      type: object
+      properties:
+        address:
+          $ref: "#/components/schemas/HarAddress"
+        images:
+          type: array
+          items: { type: string }
+        listDate: { type: ["string", "null"] }
+        soldDate: { type: ["string", "null"] }
+        listPrice: { type: ["number", "null"] }
+        soldPrice: { type: ["number", "null"] }
+        details:
+          $ref: "#/components/schemas/HarPropertyDetails"
+
+    HarViewRecord:
+      allOf:
+        - $ref: "#/components/schemas/HarListingEnrichment"
+        - type: object
+          properties:
+            dateTracked: { type: string }
+            laAgentkey: { type: string }
+            mlsNumber: { type: string }
+            webView: { type: number }
+            mobileView: { type: number }
+          required:
+            - dateTracked
+            - mlsNumber
+            - webView
+            - mobileView
+
+    HarViewsResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        total: { type: number }
+        limit: { type: number }
+        offset: { type: number }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HarViewRecord"
+      required:
+        - success
+        - total
+        - limit
+        - offset
+        - data
+
+    HarReviewRecord:
+      allOf:
+        - $ref: "#/components/schemas/HarListingEnrichment"
+        - type: object
+          properties:
+            mlsNumber: { type: string }
+            memberNumber: { type: ["string", "null"] }
+            agentId: { type: ["string", "null"] }
+            agentkey: { type: ["string", "null"] }
+            agentEmail: { type: ["string", "null"] }
+            clientName: { type: ["string", "null"] }
+            clientEmail: { type: ["string", "null"] }
+            transactionType: { type: ["string", "null"] }
+            score: { type: ["number", "null"] }
+            competency: { type: ["number", "null"] }
+            knowledge: { type: ["number", "null"] }
+            communication: { type: ["number", "null"] }
+            myExperience: { type: ["number", "null"] }
+            comments: { type: ["string", "null"] }
+            agentComment: { type: ["string", "null"] }
+            closedDate: { type: ["string", "null"] }
+            publishDate: { type: ["string", "null"] }
+            createdDate: { type: ["string", "null"] }
+          required:
+            - mlsNumber
+
+    HarReviewsResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        total: { type: number }
+        limit: { type: number }
+        offset: { type: number }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HarReviewRecord"
+      required:
+        - success
+        - total
+        - limit
+        - offset
+        - data
+
+    HarShowingAgent:
+      type: object
+      properties:
+        agentkey: { type: ["string", "null"] }
+        agentName: { type: ["string", "null"] }
+        agentEmail: { type: ["string", "null"] }
+        agentPhone: { type: ["string", "null"] }
+        officeName: { type: ["string", "null"] }
+
+    HarShowingEntry:
+      type: object
+      properties:
+        showingId: { type: ["string", "null"] }
+        showingDate: { type: ["string", "null"] }
+        showingTime: { type: ["string", "null"] }
+        duration: { type: ["number", "null"] }
+        status: { type: ["string", "null"] }
+        feedback: { type: ["string", "null"] }
+        buyerAgent:
+          $ref: "#/components/schemas/HarShowingAgent"
+
+    HarShowingRecord:
+      allOf:
+        - $ref: "#/components/schemas/HarListingEnrichment"
+        - type: object
+          properties:
+            mlsNumber: { type: string }
+            laAgentkey: { type: ["string", "null"] }
+            showings:
+              type: array
+              items:
+                $ref: "#/components/schemas/HarShowingEntry"
+          required:
+            - mlsNumber
+
+    HarShowingsResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        total: { type: number }
+        limit: { type: number }
+        offset: { type: number }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HarShowingRecord"
+      required:
+        - success
+        - total
+        - limit
+        - offset
+        - data
+
+    HarSummary:
+      type: object
+      properties:
+        totalWebViews: { type: number }
+        totalMobileViews: { type: number }
+        averageReviewScore: { type: ["number", "null"] }
+        totalReviews: { type: number }
+        totalShowings: { type: number }
+        uniqueListingsWithViews: { type: number }
+        uniqueListingsWithShowings: { type: number }
+      required:
+        - totalWebViews
+        - totalMobileViews
+        - totalReviews
+        - totalShowings
+        - uniqueListingsWithViews
+        - uniqueListingsWithShowings
