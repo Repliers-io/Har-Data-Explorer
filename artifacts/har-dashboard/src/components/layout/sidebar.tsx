@@ -16,7 +16,7 @@ export function Sidebar() {
   return (
     <div className="flex h-full w-64 flex-col bg-sidebar border-r border-sidebar-border">
       <div className="flex h-16 shrink-0 items-center px-5 border-b border-sidebar-border bg-card">
-        <img src={harLogo} alt="HAR" className="h-7 w-auto" />
+        <img src={harLogo} alt="HAR" className="h-10 w-auto" />
       </div>
       
       <div className="flex flex-1 flex-col overflow-y-auto pt-6 px-4 pb-4">
