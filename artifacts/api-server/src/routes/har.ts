@@ -201,10 +201,7 @@ router.get("/har/summary", async (req, res): Promise<void> => {
       ? validScores.reduce((a, b) => a + b, 0) / validScores.length
       : null;
 
-  const totalShowings = showings.data.reduce(
-    (sum, r) => sum + (r.showings?.length ?? 0),
-    0,
-  );
+  const totalShowings = showings.total;
   const uniqueListingsWithShowings = new Set(
     showings.data.map((r) => r.mlsNumber),
   ).size;
