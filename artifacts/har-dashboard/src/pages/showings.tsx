@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useGetHarShowings } from "@workspace/api-client-react";
 import { defaultDateBegin, defaultDateEnd, formatCurrency } from "@/lib/date-utils";
 import { ApiKeyError, isApiKeyError } from "@/components/shared/api-key-error";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Clock, User, Phone, Building, FileText, MessageSquare } from "lucide-react";
+import { Search, Clock, User, Phone, Building, FileText, MessageSquare, Loader2 } from "lucide-react";
 import { ListingPhoto } from "@/components/shared/listing-photo";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
@@ -43,15 +44,43 @@ function formatShowingTime(startIso?: string, endIso?: string): { date: string; 
   }
 }
 
+const PAGE_SIZE = 50;
+
 export default function ShowingsPage() {
   const [mlsSearch, setMlsSearch] = useState("");
   const debouncedMlsSearch = useDebounce(mlsSearch, 500);
 
-  const { data, isLoading, error } = useGetHarShowings({
+  const [offset, setOffset] = useState(0);
+  const [allListings, setAllListings] = useState<any[]>([]);
+  const [total, setTotal] = useState<number | null>(null);
+  const searchKeyRef = useRef(debouncedMlsSearch);
+
+  // Reset pagination whenever the search changes
+  useEffect(() => {
+    searchKeyRef.current = debouncedMlsSearch;
+    setOffset(0);
+    setAllListings([]);
+    setTotal(null);
+  }, [debouncedMlsSearch]);
+
+  const { data, isLoading, isFetching, error } = useGetHarShowings({
     dateBegin: defaultDateBegin,
     dateEnd: defaultDateEnd,
     mlsNumber: debouncedMlsSearch || undefined,
+    limit: PAGE_SIZE,
+    offset,
   });
+
+  // Append (or replace) listings as pages arrive
+  useEffect(() => {
+    if (!data?.data) return;
+    setTotal(data.total);
+    if (offset === 0) {
+      setAllListings(data.data as any[]);
+    } else {
+      setAllListings((prev) => [...prev, ...(data.data as any[])]);
+    }
+  }, [data]);
 
   if (isApiKeyError(error)) return <ApiKeyError />;
 
@@ -60,6 +89,10 @@ export default function ShowingsPage() {
     return [address.streetNumber, address.streetDirection, address.streetName, address.streetSuffix]
       .filter(Boolean).join(" ") || "Unknown Address";
   };
+
+  const hasMore = total !== null && allListings.length < total;
+  const initialLoading = isLoading && offset === 0 && allListings.length === 0;
+  const loadingMore = isFetching && offset > 0;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -81,8 +114,16 @@ export default function ShowingsPage() {
         </div>
       </div>
 
+      {/* Record count */}
+      {total !== null && (
+        <p className="text-sm text-muted-foreground">
+          Showing <span className="font-medium text-foreground">{allListings.length.toLocaleString()}</span>{" "}
+          of <span className="font-medium text-foreground">{total.toLocaleString()}</span> listings
+        </p>
+      )}
+
       <div className="space-y-8">
-        {isLoading ? (
+        {initialLoading ? (
           Array.from({ length: 2 }).map((_, i) => (
             <Card key={i} className="border-border">
               <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
@@ -92,8 +133,8 @@ export default function ShowingsPage() {
               </CardContent>
             </Card>
           ))
-        ) : data?.data && (data.data as any[]).length > 0 ? (
-          (data.data as any[]).map((listing, index) => {
+        ) : allListings.length > 0 ? (
+          allListings.map((listing, index) => {
             const logs: any[] = listing.logs ?? [];
             return (
               <Card key={`${listing.mlsNumber}-${index}`} className="border-border overflow-hidden shadow-sm">
@@ -228,14 +269,50 @@ export default function ShowingsPage() {
               </Card>
             );
           })
-        ) : (
+        ) : !isFetching ? (
           <div className="text-center p-12 border border-dashed rounded-xl border-border bg-card">
             <Clock className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
             <h3 className="text-lg font-medium text-foreground">No showings found</h3>
             <p className="text-muted-foreground">There are no ShowingSmart logs for this period.</p>
           </div>
-        )}
+        ) : null}
+
+        {/* Skeleton cards while loading more */}
+        {loadingMore &&
+          Array.from({ length: 2 }).map((_, i) => (
+            <Card key={`loading-more-${i}`} className="border-border">
+              <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
+              <CardContent>
+                <Skeleton className="h-24 w-full mb-2" />
+                <Skeleton className="h-24 w-full" />
+              </CardContent>
+            </Card>
+          ))}
       </div>
+
+      {/* Load more button */}
+      {hasMore && !isFetching && (
+        <div className="flex justify-center pt-2 pb-6">
+          <Button
+            variant="outline"
+            onClick={() => setOffset(allListings.length)}
+            disabled={isFetching}
+          >
+            Load more
+            <span className="ml-1.5 text-muted-foreground text-xs">
+              ({(total! - allListings.length).toLocaleString()} remaining)
+            </span>
+          </Button>
+        </div>
+      )}
+      {isFetching && offset > 0 && (
+        <div className="flex justify-center pt-2 pb-6">
+          <Button variant="outline" disabled>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Loading…
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
