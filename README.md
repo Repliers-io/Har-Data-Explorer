@@ -12,6 +12,10 @@ The dashboard brings together:
 
 The application is a proxy-based dashboard: the browser talks to the local API server, and the API server securely forwards requests to Repliers. The Repliers API key is never sent to the browser.
 
+![HAR Member Dashboard showing activity with identifying details redacted](docs/images/har-dashboard-showings-redacted.png)
+
+_Example dashboard view with property and agent information redacted._
+
 ## Tech stack
 
 - React 19
