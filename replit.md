@@ -1,4 +1,4 @@
-# HAR Member Dashboard
+# HAR.com Stats Dashboard
 
 A prototype dashboard for HAR (Houston Association of REALTORS) members to explore their proprietary HAR.com performance data via the Repliers API. Agents and brokers can see listing traffic, client transaction reviews, and ShowingSmart logs — all the numbers they check daily.
 
