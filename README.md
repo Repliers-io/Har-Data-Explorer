@@ -28,7 +28,7 @@ There is no application database. Data is loaded from the Repliers API when the 
 
 ## Prerequisites
 
-- Node.js 24 (the project is configured for Node.js 24 in Replit)
+- Node.js 24
 - pnpm
 - A Repliers API key with access to the HAR partner endpoints
 
@@ -59,7 +59,7 @@ For local development, you can export it in the terminal before starting the ser
 export REPLIERS_API_KEY="your-repliers-api-key"
 ```
 
-Do not commit the key to the repository or place it in frontend code. In Replit, add it through the Secrets tool instead of committing a `.env` file.
+Do not commit the key to the repository or place it in frontend code. Use your development environment's secret or environment-variable management to provide it securely.
 
 ### 3. Start the API server
 
@@ -81,7 +81,7 @@ PORT=5173 BASE_PATH=/ pnpm --filter @workspace/har-dashboard run dev
 
 The dashboard will be available at `http://localhost:5173`.
 
-> In the standard Replit setup, the configured workflows provide the required ports and base path automatically. If you run the frontend and API on separate local ports, configure your local reverse proxy or development setup so `/api/*` requests from the dashboard are forwarded to the API server at port 8080.
+> When the frontend and API run on separate local ports, configure your local reverse proxy or development setup so `/api/*` requests from the dashboard are forwarded to the API server at port 8080.
 
 ## Available commands
 
